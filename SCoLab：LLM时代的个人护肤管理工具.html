@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>SCoLab：LLM时代的个人护肤管理工具</title>
+  	<style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", -apple-system, BlinkMacSystemFont, sans-serif;
+            color: #222;
+            background: #fdfcf9;
+            line-height: 1.9;
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 80px 24px 120px;
+        }
+
+        /* ===== 头部 ===== */
+        .hero {
+            margin-bottom: 80px;
+            padding-bottom: 48px;
+            border-bottom: 1px solid #eae6dc;
+        }
+
+        .hero .eyebrow {
+            font-size: 13px;
+            color: #999;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            font-family: Georgia, "Times New Roman", serif;
+            font-style: italic;
+        }
+
+        .hero h1 {
+            font-size: 40px;
+            font-weight: 700;
+            line-height: 1.3;
+            color: #1a1a1a;
+            margin-bottom: 16px;
+            letter-spacing: -0.5px;
+        }
+
+        .hero .subtitle {
+            font-size: 18px;
+            color: #666;
+            font-weight: 400;
+        }
+
+        .hero .meta {
+            margin-top: 32px;
+            font-size: 14px;
+            color: #888;
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .hero .meta a {
+            color: #c5653e;
+            text-decoration: none;
+            border-bottom: 1px dotted #c5653e;
+        }
+
+        /* ===== 章节 ===== */
+        section {
+            margin-bottom: 64px;
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 24px;
+            margin-top: 16px;
+            letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h2::before {
+            content: "";
+            width: 4px;
+            height: 20px;
+            background: #c5653e;
+            border-radius: 2px;
+        }
+
+        h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+            margin-top: 32px;
+        }
+
+        p {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        /* ===== 金句高亮 ===== */
+        .highlight {
+            font-weight: 600;
+            color: #1a1a1a;
+            background: linear-gradient(180deg, transparent 60%, #fbe9c9 60%);
+            padding: 0 2px;
+        }
+
+        blockquote {
+            border-left: 3px solid #c5653e;
+            padding: 8px 0 8px 24px;
+            margin: 28px 0;
+            font-size: 19px;
+            color: #333;
+            font-style: normal;
+            background: transparent;
+        }
+
+        blockquote.citation {
+            font-size: 15px;
+            color: #666;
+            border-left-color: #ddd;
+            font-style: italic;
+        }
+
+        /* ===== 词语列表 ===== */
+        .words {
+            list-style: none;
+            padding: 20px 0;
+            border-top: 1px dashed #e0dcd0;
+            border-bottom: 1px dashed #e0dcd0;
+            margin: 24px 0;
+        }
+
+        .words li {
+            padding: 8px 0;
+            display: flex;
+            gap: 14px;
+        }
+
+        .words .term {
+            font-weight: 600;
+            color: #c5653e;
+            min-width: 80px;
+        }
+
+        /* ===== 表格 ===== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0 24px;
+            font-size: 15px;
+        }
+
+        th {
+            text-align: left;
+            padding: 12px 8px;
+            font-weight: 600;
+            color: #1a1a1a;
+            border-bottom: 2px solid #1a1a1a;
+        }
+
+        td {
+            padding: 12px 8px;
+            border-bottom: 1px solid #eae6dc;
+            color: #444;
+        }
+
+        td:first-child {
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+
+        .cost-total td {
+            border-bottom: none;
+            padding-top: 16px;
+            font-weight: 700;
+            color: #c5653e;
+            border-top: 2px solid #1a1a1a;
+        }
+
+        /* ===== 代码块 ===== */
+        pre {
+            background: #f6f3ec;
+            padding: 20px 24px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: "SF Mono", Consolas, Monaco, monospace;
+            font-size: 13px;
+            line-height: 1.7;
+            color: #444;
+            margin: 20px 0;
+            border: 1px solid #eae6dc;
+        }
+
+        code {
+            font-family: "SF Mono", Consolas, Monaco, monospace;
+            font-size: 0.92em;
+            background: #f6f3ec;
+            padding: 2px 6px;
+            border-radius: 3px;
+            color: #b14a2a;
+        }
+
+        pre code {
+            background: transparent;
+            padding: 0;
+            color: inherit;
+        }
+
+        /* ===== 编号列表 ===== */
+        ol {
+            padding-left: 0;
+            list-style: none;
+            counter-reset: item;
+        }
+
+        ol > li {
+            padding-left: 40px;
+            position: relative;
+            margin-bottom: 24px;
+            counter-increment: item;
+        }
+
+        ol > li::before {
+            content: counter(item);
+            position: absolute;
+            left: 0;
+            top: 2px;
+            width: 26px;
+            height: 26px;
+            background: #1a1a1a;
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: Georgia, serif;
+        }
+
+        ol > li strong {
+            color: #1a1a1a;
+            display: block;
+            margin-bottom: 6px;
+            font-size: 17px;
+        }
+
+        /* ===== 决策卡片 ===== */
+        .decisions {
+            display: grid;
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .decision {
+            padding: 20px 24px;
+            background: #faf7f0;
+            border-left: 3px solid #c5653e;
+        }
+
+        .decision .q {
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        .decision .a {
+            color: #555;
+            font-size: 15px;
+        }
+
+        /* ===== 协作双栏 ===== */
+        .duo {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 24px 0;
+        }
+
+        .duo-col {
+            padding: 24px;
+            background: #faf7f0;
+            border-radius: 6px;
+        }
+
+        .duo-col h4 {
+            font-size: 13px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: #999;
+            margin-bottom: 10px;
+            font-weight: 600;
+            font-family: Georgia, serif;
+            font-style: italic;
+        }
+
+        .duo-col p {
+            margin: 0;
+            font-size: 15px;
+            color: #333;
+        }
+
+        /* ===== 尾注 ===== */
+        .footer-note {
+            margin-top: 80px;
+            padding-top: 40px;
+            border-top: 1px solid #eae6dc;
+            font-size: 14px;
+            color: #999;
+            text-align: center;
+        }
+
+        .footer-note a {
+            color: #c5653e;
+            text-decoration: none;
+        }
+
+        /* ===== 后记 ===== */
+        .postscript {
+            margin-top: 64px;
+            padding: 32px;
+            background: #fdf6e8;
+            border-radius: 6px;
+            font-style: italic;
+            color: #555;
+        }
+
+        .postscript h2 {
+            font-style: normal;
+            margin-top: 0;
+        }
+
+        /* ===== 手机适配 ===== */
+        @media (max-width: 640px) {
+            .container {
+                padding: 48px 20px 80px;
+            }
+
+            .hero h1 {
+                font-size: 30px;
+            }
+
+            .hero .subtitle {
+                font-size: 16px;
+            }
+
+            h2 {
+                font-size: 21px;
+            }
+
+            .duo {
+                grid-template-columns: 1fr;
+            }
+
+            blockquote {
+                font-size: 17px;
+                padding-left: 18px;
+            }
+
+            .words li {
+                flex-direction: column;
+                gap: 2px;
+            }
+
+            .words .term {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- ===== 头部 ===== -->
+        <header class="hero">
+            <div class="eyebrow">Platform Overview · 2026</div>
+            <h1>SCoLab：LLM时代的个人护肤管理工具</h1>
+            <p class="subtitle">让语言模型协助你完成今日Routine的构建、评测，让有效护肤触手可及。</p>
+            <div class="meta">
+                <span>🔬 产品组合评分</span>
+                <span>🤝 智能推荐</span>
+                <span>🌐 <a href="https://scolab.vercel.app/" target="_blank">scolab.vercel.app</a></span>
+            </div>
+        </header>
+
+        <!-- ===== 起源 ===== -->
+        <section>
+            <h2>起源：逃离消费主义的困局</h2>
+            <p>在消费主义浪潮席卷而来时，我购入了无数的护肤品、化妆品。可真正开始日复一日地使用时，却总发现体验与期待相差甚远：护肤品与底妆搭配不当时会搓泥，精华与乳液成分冲突时又容易诱发粉刺。于是，我又一次掉入“补救式消费”的陷阱，试图通过新的购买去弥补现有产品的缺陷。最终，桌面上的瓶瓶罐罐越堆越多，许多产品甚至在过期前，都没能真正发挥它们原本的价值。<span class="highlight">为了摆脱选品失败导致的一系列问题</span>，也为了👛不被无意义的消费持续透支，我期待基于自己已有的产品，规划出协同度更高、更适合长期使用的搭配组合。
+</p></p>
+            <blockquote>"让已有产品达成有效的协作，是 SCoLab的价值所在。"</blockquote>
+            <p>你是否也遇到过这样的困境：</p>
+ 		  <ul class="words">
+            <ul style="list-style: none; padding-left: 0; margin: 20px 0;">
+		<li style="margin-bottom: 12px;">🎙️ <strong>买了很多同类产品，用起来却不知道哪些组合效果最好？</strong></li>
+		<li style="margin-bottom: 12px;">🎙️ <strong>兴致勃勃试用了新的精华，结果不知道到底和哪个底妆产品打架搓泥，效果大打折扣？</strong></li>
+		<li style="margin-bottom: 12px;">🎙️ <strong>想购入新的定妆产品，但不知道会不会和我的肤质及现有粉底不搭配？</strong></li>
+            </ul>
+            </ul>
+            <p>于是，我用Vibe-coding构建了一款针对产品组合效果的分析工具（需梯子） 👉 <a href="https://scolab.vercel.app/" target="_blank" style="color: #c5653e;">Scolab.site</a></p>
+		<p>创造新的工具让人感到快乐，<span class="highlight">希望大家的心选宝贝们，能发挥出它们的最大效用</span>，让每日Routine都杜绝过敏、搓泥、拔干等疑难杂症！</p>
+	</section>
+
+        <!-- ===== 产品说明书 ===== -->
+        <section>
+            <h2>⚙️ 产品说明书</h2>
+
+            <h3>1. 重要旅程</h3>
+            <ul class="words">
+               <li><span class="term">自用产品</span><span>输入个人产品信息，建立个人专属美妆护肤仓库，智能跟踪到期状态。分析个人选品风格，形成定制化新品推荐。</span></li>
+                <li><span class="term">搭配分析</span><span>用语言模型来给不同的 化妆 & 护肤 产品组合打分，让组合效果一目了然。结构化产品组合评分数据，版本可溯。</span></li>
+                <li><span class="term">肤质档案</span><span>记录影响产品使用效果的三大重要信息——基础肤质、皮肤状态、所处环境，方便后续智能推荐新品，拒绝“玄学”调优。</span></li>
+            </ul>
+	</section>
+
+	<h3>2. 功能矩阵</h3>
+            <table>
+		  <tr>
+                <thead>
+                    <tr>
+                        <th width="150px">模块</th>
+                        <th width="auto">核心功能</th>
+                        <th width="340px">价值所在</th>
+                    </tr>
+                </thead>
+                <tbody>
+        		 <tr>
+                        <td>豆包2.0大模型</td>
+                        <td>AI智能分析</td>
+                        <td>基于预设信息智能分析组合效果，推荐新品</td>
+                    </tr>
+                    <tr>
+                        <td>注册登录</td>
+                        <td>Supabase云端数据仓库</td>
+                        <td>建立可持续利用的用户数据库，支持跨设备使用</td>
+                    </tr>
+                    <tr>
+                        <td>组合分数记录</td>
+                        <td>收藏最爱产品组合</td>
+                        <td>记录高分routine，重复最优护肤 / 美妆流程</td>
+                    </tr>
+                    <tr>
+                        <td>OCR成分识别</td>
+                        <td>智能识别产品成分</td>
+                        <td>根据上传的成分表图片，智能识别产品类型、成分并录入产品库，无需繁琐的手动填写</td>
+                    </tr>
+                </tbody>
+            </table>
+		</section>
+
+            <h3>3. 关键决策</h3>
+            <div class="decisions">
+                <div class="decision">
+                    <div class="q">为什么强调“数据可复用”？</div>
+                    <div class="a">这不仅是一个前端产品，而是可以支持用户<span class="highlight">跨设备使用</span>的工具。就算你更换了不同的电脑设备，都可以通过登录来获取你已录入的数据，无需担心数据丢失。</div>
+                </div>
+                <div class="decision">
+                    <div class="q">为何能够“收藏”产品组合？</div>
+                    <div class="a">我希望这是一个可持续使用的产品，我们总能找到一个自己最钟爱的Routine并持续地使用，直至这成为我们的生活习惯，<span class="highlight">用重复利用代替盲目购买</span>。</div>
+                </div>
+   <div class="decision">
+                    <div class="q">为什么仍旧提供“新品推荐”功能？</div>
+                    <div class="a">也许大家仍有尝新的欲望，又不想做出太多的错误选择。Scolab在遍历你的护肤、化妆产品库后，<span class="highlight">不会盲目推荐</span>，而是会根据你的选品风格和当前缺失的产品，给出精准的补位建议，让你的下次购买成为更优决策。</div>
+                </div>
+            </div>
+        </section>
+
+<h3>4. 技术栈（尽量让复杂系统保持轻盈）</h3>
+<table>
+    <thead>
+        <tr>
+            <th>层级</th>
+            <th>选择</th>
+            <th>为什么</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>前端</td>
+            <td>React + Vite + TypeScript</td>
+            <td>保持高效的同时，承载复杂的 AI 交互与状态管理</td>
+        </tr>
+        <tr>
+            <td>AI</td>
+            <td>doubao-seed-2-0-lite</td>
+            <td>用于成分识别、护肤流程分析与产品搭配推荐</td>
+        </tr>
+        <tr>
+            <td>数据</td>
+            <td>Supabase</td>
+            <td>用最低的后端成本，保存用户产品柜与历史分析结果</td>
+        </tr>
+        <tr>
+            <td>架构</td>
+            <td>Serverless API Routes</td>
+            <td>把 OCR、成分分析、推荐系统拆成独立 AI 工作流</td>
+        </tr>
+        <tr>
+            <td>图片处理</td>
+            <td>本地裁剪 + AI OCR</td>
+            <td>减少无效识别与 Token 消耗，让上传体验更稳定</td>
+        </tr>
+        <tr>
+            <td>部署</td>
+            <td>Vercel</td>
+            <td>低成本部署与持续迭代，后续计划接入独立域名</td>
+        </tr>
+        <tr>
+            <td>AI 协作</td>
+            <td>AI Studio, Antigravity, Codex</td>
+            <td>让个人开发也能完成完整 AI 产品的设计与迭代</td>
+        </tr>
+    </tbody>
+</table>
+	</section>
+
+            <h3>5. 项目结构</h3>
+   <ul class="words">
+               <li><span class="term">产品管理</span><span>用户输入 → 图片处理 → AI OCR成分识别&录入 → 产品到期设置</span></li>
+                <li><span class="term">组合分析</span><span>结构化产品分类 → 产品数据库 → 流程组合逻辑 → AI综合分析 → 心仪组合收藏</span></li>
+                <li><span class="term">综合推荐</span><span>肤质录入 → 结合选品风格 → 智能推荐</span></li>
+            </ul>
+	</section>
+<pre><code>SCoLab
+├── index.html                    # Vite 应用入口
+├── package.json                  # 项目依赖与 AI / React 环境配置
+├── vite.config.ts                # 前端构建与开发服务器配置
+├── tsconfig.json                 # TypeScript 类型系统配置
+├── metadata.json                 # 应用元信息与 AI Studio 配置
+
+├── api/                          # 服务端 AI 工作流
+│   ├── health.ts                 # 健康检查接口
+│   ├── ai/
+│   │   ├── parse-ingredients.ts  # AI OCR：识别包装成分表
+│   │   ├── analyze-ingredients.ts# AI 成分解析：分析功效与风险
+│   │   ├── analyze-routine.ts    # 搭配逻辑：分析护肤流程协同性
+│   │   ├── analyze-shelf.ts      # 产品库综合分析：识别闲置与已购产品特性
+│   │   └── recommendations.ts    # 推荐系统：生成更合理的产品组合
+│   └── _lib/
+│       ├── doubao.ts             # 豆包 AI 调用封装
+│       └── http.ts               # API 请求与响应工具
+
+├── supabase/
+│   └── schema.sql                # 用户、产品库、分析记录数据库结构
+
+└── src/
+    ├── main.tsx                  # React 应用挂载入口
+    ├── App.tsx                   # 用户输入、页面状态与核心业务流
+    ├── index.css                 # 全局样式系统
+    ├── types.ts                  # 产品 / 成分 / AI 分析结果结构化类型
+    ├── vite-env.d.ts             # Vite 环境变量类型声明
+
+    ├── components/
+    │   └── AuthModal.tsx         # 用户登录与身份验证弹窗
+
+    ├── services/
+    │   └── aiService.ts      # 前端 AI 请求封装与调用管理
+
+    └── lib/
+        ├── supabase.ts           # 用户数据、产品库、历史记录操作
+        └── cropImage.ts          # 图片裁剪与上传前预处理
+</code></pre>
+                <h3>6. 开发过程中的卡点</h3>
+
+<div class="decisions">
+
+    <div class="decision">
+        <div class="q">
+            卡点一：性能优化
+        </div>
+
+        <div class="a">
+            由于应用功能逐渐丰富（包含 AI 分析、成分识别、日常 Routine 管理、产品库分析等），<code>App.tsx</code> 一度增长到了 2500 行以上。在处理复杂表单（如“新增产品”Modal）以及图像处理（如“图片裁剪”）时，状态频繁更新导致页面出现重复渲染、交互卡顿等问题。
+            <br /><br />
+
+            解决方案：
+            <br />
+
+            • 使用 <code>useMemo</code> 与 <code>useCallback</code>包裹高频计算与函数引用，减少不必要的组件重复渲染。
+            <br />
+
+            • 将密码校验、邮箱校验、图片裁剪等复杂逻辑拆分到独立工具函数与组件中，避免主业务流持续膨胀。
+            <br />
+
+            • 增加错误处理层，将底层鉴权报错转化为用户能够理解的中文提示，例如把 <code>auth/admin-restricted-operation</code>转换为更明确的引导信息。
+            <br />
+        </div>
+    </div>
+
+
+    <div class="decision">
+        <div class="q">
+            卡点二：AI 模型稳定性
+        </div>
+
+        <div class="a">
+            项目初期使用的是 Gemini 系列模型。虽然能力很强，但在实际长期测试过程中，存在以下问题：
+            <br />
+
+            • OCR 与长文本分析场景下，Token 消耗较高，对个人开发项目来说存在持续成本压力。
+            <br />
+
+            • 某些时段接口响应不稳定，偶尔会出现长时间 loading、返回中断等情况，对“搭配分析”这类高频交互功能影响较大。
+            <br />
+
+            • 海外接口在网络环境下存在一定门槛，会影响普通用户的可访问性与后续产品扩展。
+            <br /><br />
+
+            解决方案：
+            <br />
+            考虑到真实产品环境中的<span class="highlight">稳定性、响应速度、经济成本与长期可维护性</span> ，我将主要工作流逐步迁移到了<code>doubao-seed-2-0-lite</code>。
+            <br />
+            在实际体验中，Doubao 在中文语境、护肤成分分析、结构化推荐等任务上已经能够满足当前阶段需求，并且推理速度更稳定、调用成本更低，更适合作为个人 AI 产品的长期基础设施。
+            <br />
+            </span>
+        </div>
+    </div>
+
+</div>
+<!-- ===== 实现时间 ===== -->
+        <section>
+            <h2>⏱️ 实现时间</h2>
+            <p><span class="highlight">这个点子是实习工作日下班之后的个人时间想到的，刚好自己在护肤，发现有些产品只能晚上避光用，有些产品得避开某些成分用，对用户的专业性要求实在太高了。  </span></p>
+		<p><span class="highlight">周六直接开干，花了个周末就完成了MVP，后续花了约1周的下班后时间小修小改就完成了。之后有持续debug，维护数据库，后面会继续完善迭代更多的功能。</span></p>
+        </section>
+
+        <!-- ===== 一些浅薄的总结 ===== -->
+        <section>
+            <h2>💡 给正在探索 AI 前沿的你</h2>
+	<p>不要畏难！不要畏难！不要畏难！<p>
+            <ul style="list-style: none; padding-left: 0; margin: 20px 0;">
+                <li style="margin-bottom: 12px;">🚀 <strong>想到就去执行</strong> —— 把想法转化为可交互的 Demo，比停留在嘴上说说成就感大的多得多得多。</li>
+                <li style="margin-bottom: 12px;">⭐ <strong>不要畏惧采用一些新的模型</strong> —— 模型很多，没有真正使用过的话都不能知道它能多大程度满足你的需求，并且很多模型有地区限制、成本限制，别人觉得好的未必是最适合你的，所以用起来才是关键。比如我用着用着Antigravity，莫名又登不上了，超级可恶！😭</li>
+                <li style="margin-bottom: 12px;">📊 <strong>重视后台</strong> —— 除非你是想展示个人审美、或者完成一次性的交互，尽量不要让你的产品成为次抛型产品。</li>
+                <li style="margin-bottom: 12px;">🌐 <strong>开放思维</strong> —— 你的产品永远不会一次性达到完美，第一阶段是从0-1，之后才是1-100，而这需要时间去沉淀。不要急躁！<span class="highlight">再优秀的产品也有迭代的空间！</span></li>
+                <li style="margin-bottom: 12px;">🖥️ <strong>管理代码</strong> —— 学会使用github分支，<span class="highlight">管理你每个版本的代码非常重要</span>，尤其是可持续使用的产品（产品架构复杂、非静态网页），经常面临需要新增功能或者debug的场景，这种场景对代码管理的要求是很高的。</li>
+            </ul>
+            <p>我们相信，<span class="highlight">在AI的帮助下</span>，保持对古法的敬畏之心，能够让我们获得更大的价值！</p>
+        </section>
+
+        <!-- ===== 尾注 ===== -->
+        <div class="footer-note">
+            <p>Science · Collaboration · Laboratory · <a href="https://scolab.vercel.app/">Explore SCoLab</a></p>
+        </div>
+    </div>
+</body>
+</html>
+```
