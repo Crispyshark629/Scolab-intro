@@ -575,7 +575,7 @@
         ├── supabase.ts           # 用户数据、产品库、历史记录操作
         └── cropImage.ts          # 图片裁剪与上传前预处理
 </code></pre>
-                <h3>6. 开发过程中的卡点</h3>
+                <h3>6. 开发过程中遇到的卡点</h3>
 
 <div class="decisions">
 
@@ -602,10 +602,52 @@
         </div>
     </div>
 
+    <div class="decision">
+        <div class="q">
+            卡点二：API Key 安全
+        </div>
+
+        <div class="a">
+            在配置key的时，我恰巧到一则关于 AI 创业公司 API Key 泄露的新闻。<span class="highlight">一家墨西哥 AI 初创公司的 Gemini API Key 因误上传至 GitHub，被恶意爬虫扫描并盗用，在短短 48 小时内产生了高额调用费用。</span>  所以我马上重新检查了自己的项目结构，并且查阅了相关风险。
+            <br />
+            我发现在早期快速开发阶段，前端代码中存在直接调用模型接口的逻辑：
+            <br />
+
+            • 若 API Key 暴露在浏览器请求、Network 面板或构建后的 JS 文件中，就存在被恶意盗刷的风险。
+            <br />
+
+            • AI 产品属于高频调用场景，若接口没有鉴权与调用限制，可能会导致异常 Token 消耗与额外成本。
+            <br />
+
+            • 当前端直接承担 AI 调用逻辑时，后续模型切换、接口升级与错误监控都会更加困难。
+            <br /><br />
+
+            解决方案：
+             <br />
+
+             考虑到真实产品环境中的<span class="highlight">安全性、可维护性与长期稳定性</span>，我将主要 AI 工作流迁移至 <code>Serverless API Routes</code> 中。通过服务端统一管理模型请求，前端只负责用户交互与数据展示，从结构上降低 API Key 暴露风险。
+            <br />
+
+            同时：
+            <br />
+
+            • 使用 <code>.env</code> 管理敏感环境变量，避免 Key 进入公开仓库。
+             <br />
+
+            • 通过 <code>.gitignore</code> 阻止本地配置文件被上传至 GitHub。
+            <br />
+
+            • 将 OCR、搭配分析、推荐系统拆分为独立接口，减少单接口过载带来的风险。
+            <br />
+
+            • 引入 Supabase 用户体系，为后续鉴权与调用限制预留扩展空间。
+             <br />
+        </div>
+    </div>
 
     <div class="decision">
         <div class="q">
-            卡点二：AI 模型稳定
+            卡点三：AI 模型稳定性
         </div>
 
         <div class="a">
